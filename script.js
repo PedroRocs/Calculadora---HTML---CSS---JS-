@@ -1,42 +1,44 @@
 const buttons = document.querySelectorAll(".numbers")
 const display = document.querySelector("#visor");
+
 const calculadora = {
-    limparRegistro: function limparRegistro() {
-        display.innerHTML = "";
+    receberCaracteres: [],
+
+    limparTodosOsValoresCalculadora: function limparTodosOsValoresCalculadora() {
+        this.receberCaracteres = [];
+        this.mostrarCaracteresNaCalculadora()
     },
-
-    eliminarUltimoCaractere: function eliminarUltimoCaractere() {
-        let text = display.innerHTML;
-        text = text.slice(0, -1);
-        display.innerHTML = text;
+    eliminarUltimoCaractereDaCalculadora: function eliminarUltimoCaractereDaCalculadora() {
+        this.receberCaracteres.pop()
+        this.mostrarCaracteresNaCalculadora()
     },
-
-    totalDisplay: function totalDisplay() {
-        display.innerHTML = eval(display.textContent)
+    mostrarCaracteresNaCalculadora: function mostrarValoresNaCalculadora() {
+        let caracteres = this.receberCaracteres.join();
+        caracteres = caracteres.replace(/,/g, "")
+        display.textContent = caracteres;
     },
-
-    showDisplay: function showDisplay(number) {
-
-        if (isNaN(number) == true && isNaN(display.innerHTML.charAt(display.innerHTML.length - 1)) == true) {
-            display.innerHTML += "";
-        } else {
-            if (number == "%") {
-                number = "/100*";
-            }
-            if (display.innerHTML == 0) {
-                display.innerHTML = "";
-                display.innerHTML += number
-            } else {
-                display.innerHTML += number
-            }
-        }
+    mostrarValorTotal: function mostrarValorTotal() {
+        let caracteres = this.receberCaracteres.join();
+        caracteres = caracteres.replace(/,/g, "");
+        caracteres = caracteres.replace(/%/g, "/100*");
+        this.receberCaracteres = [eval(caracteres)];
+        this.mostrarCaracteresNaCalculadora();
     },
 }
 
-
-
 buttons.forEach(element => {
     element.addEventListener("click", () => {
-        calculadora[element.dataset.set](element.textContent);
-    })
-})
+        if (element.textContent.length > 2 && element.textContent.length != calculadora.receberCaracteres.length) {
+            return
+        } 
+        else {
+            if (element.dataset.set == "receberCaracteres") {
+                calculadora.receberCaracteres.push(element.textContent)
+                calculadora.mostrarCaracteresNaCalculadora();
+            }
+            else {
+                calculadora[element.dataset.set]()
+            }
+        }
+    });
+});
